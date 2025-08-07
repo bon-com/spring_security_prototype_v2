@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/mvc
+         http://www.springframework.org/schema/mvc/spring-mvc.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop/spring-aop.xsd
+       ">
+
+	<!-- アノテーションを有効にする -->
+	<!-- 
+	AuthenticationPrincipalArgumentResolverを追加することで、ハンドラ引数にて認証情報を取得する
+	 -->
+	<mvc:annotation-driven>
+		<mvc:argument-resolvers>
+			<bean class="org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver" />
+		</mvc:argument-resolvers>
+	</mvc:annotation-driven>
+
+
+	<!-- コンポーネントを表すアノテーションがついたクラスをスキャンする -->
+    <context:component-scan base-package="com.example.prototype.web" />
+    
+	<!-- カートをセッションスコープで管理するためBean定義 -->	
+	<bean id="cart" class="com.example.prototype.web.base.dto.CartDto" scope="session">
+		<aop:scoped-proxy proxy-target-class="true" />
+	</bean>
+	
+	<!-- WEB-INF/viewsフォルダ配下のjspファイルをさがす -->
+    <mvc:view-resolvers>
+        <mvc:jsp prefix="/WEB-INF/views/" suffix=".jsp" />
+    </mvc:view-resolvers>
+
+	<!-- プロパティファイル参照 -->
+	<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:auth.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- HandlerInterceptorを適用させるためのBean定義 -->
+	<mvc:interceptors>
+		<!-- UsersFormSessionCleanupInterceptor -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**" /><!-- 適用対象のパス -->
+			<mvc:exclude-mapping path="/resources/**" /><!-- 除外対象のパス -->
+			<mvc:exclude-mapping path="/admin/users/register/**" /><!-- 除外対象のパス -->
+			<mvc:exclude-mapping path="/admin/users/edit/**" /><!-- 除外対象のパス -->
+			<bean class="com.example.prototype.web.interceptor.UsersFormSessionCleanupInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>

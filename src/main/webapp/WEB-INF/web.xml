@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app>
+	<!-- WebアプリケーションコンテキストのDIコンテナ作成 -->
+	<servlet>
+		<servlet-name>app</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:/META-INF/spring/springMVCContext.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>app</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<!-- ルートアプリケーションコンテキストのDIコンテナ作成 -->
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath:/META-INF/spring/applicationContext.xml
+		</param-value>
+	</context-param>
+
+	<!-- クライアント側からサーバー側へパラメータ送信時の文字化け防止 -->
+	<filter>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-class>
+			org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 拡張子「.jsp」ファイルはすべてUTF-8でエンコーディングされて、 各JSPの先頭にinclude.jspを含むようにする設定。 -->
+	<jsp-config>
+		<jsp-property-group>
+			<url-pattern>*.jsp</url-pattern>
+			<page-encoding>UTF-8</page-encoding>
+			<include-prelude>/WEB-INF/common/include.jsp</include-prelude>
+		</jsp-property-group>
+	</jsp-config>
+
+	<!-- Spring Security -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 認証情報ロギングフィルター -->
+	<filter>
+		<filter-name>authLoggingFilter</filter-name>
+		<filter-class>com.example.prototype.web.users.filter.AuthLoggingFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>authLoggingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- デフォルトのエラー遷移先 -->
+<!-- 	<error-page>
+		<location>/WEB-INF/views/default_error.jsp</location>
+	</error-page> -->
+	<!-- Spring Securityがセッションの作成・破棄を検知できるようにするためのリスナー -->
+	<listener>
+		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+	</listener>
+	<!-- セッションタイムアウト設定（指定しない場合はデフォルトで30分） -->
+	<session-config>
+		<session-timeout>1</session-timeout> <!-- 単位は分 -->
+	</session-config>
+</web-app>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- コンソール出力の設定 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- JNDI のエラーログを抑制 -->
+	<logger name="org.springframework.jndi" level="WARN" />
+
+	<!-- Spring Security の詳細ログ出力 -->
+	<logger name="org.springframework.security" level="DEBUG" />
+	<logger name="org.springframework.security.web.FilterChainProxy" level="DEBUG" />
+	<logger name="org.springframework.security.oauth2" level="DEBUG" />
+	<logger name="org.springframework.web" level="INFO" /> <!-- DispatcherServlet関連も見たい場合 -->
+
+	<!-- ルートログ設定 -->
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
