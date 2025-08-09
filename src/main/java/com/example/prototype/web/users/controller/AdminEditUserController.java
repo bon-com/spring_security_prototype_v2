@@ -76,9 +76,18 @@ public class AdminEditUserController {
      * @return
      */
     @PostMapping(value = "/users/edit/{loginId}")
-    public String editReq(@Valid UsersForm form, BindingResult rs) {
+    public String editReq(@Valid UsersForm form, BindingResult rs, Model model) {
         if (rs.hasErrors()) {
             return "admin/admin_edit_user";
+        }
+        
+        // メールアドレスの重複チェック
+        if (form.getEmail() != null) {
+            int count = userService.findCountByEmail(form.getEmail()); 
+            if (count != 0) {
+                model.addAttribute("warning", Constants.ERR_MSG_EMAIL_DUPLICATE);
+                return "admin/admin_edit_user";
+            }
         }
         
         // 確認画面に遷移
@@ -95,6 +104,7 @@ public class AdminEditUserController {
     public String confirm(UsersForm form, Model model) {
         model.addAttribute("loginId", form.getLoginId());
         model.addAttribute("username", form.getUsername());
+        model.addAttribute("email", form.getEmail());
         model.addAttribute("enabled", form.isEnabled());
         model.addAttribute("accountExpiryAt", DataUtil.convertDateFromLocalDateTime(form.getAccountExpiryAt()));
         model.addAttribute("passwordExpiryAt", DataUtil.convertDateFromLocalDateTime(form.getPasswordExpiryAt()));

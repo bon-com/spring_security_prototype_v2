@@ -44,6 +44,12 @@ th {
 			<td>*****</td>
 		</tr>
 		<tr>
+			<th>メールアドレス</th>
+			<td>
+				<c:out value="${user.email}" />
+			</td>
+		</tr>
+		<tr>
 			<th>アカウント有効状態</th>
 			<td>
 				<c:out value="${user.enabled ? '有効' : '無効'}" />

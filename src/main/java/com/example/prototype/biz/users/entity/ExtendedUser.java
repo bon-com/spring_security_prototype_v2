@@ -4,10 +4,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import com.example.prototype.common.constants.Constants;
 
@@ -15,10 +19,10 @@ import lombok.Data;
 
 /**
  * 利用者拡張エンティティ
- * Spring SecurityのUserを継承して拡張している
+ * Spring SecurityとOAuth2連携のUserを継承して拡張している
  */
 @Data
-public class ExtendedUser implements UserDetails {
+public class ExtendedUser implements OidcUser, UserDetails {
     // ------------------------------
     // 既存フィールド ここから
     // ------------------------------
@@ -51,11 +55,19 @@ public class ExtendedUser implements UserDetails {
     private LocalDateTime accountExpiryAt;
     /** パスワード有効期限日時 */
     private LocalDateTime passwordExpiryAt;
+    /** メールアドレス */
+    private String email;
+    /** Google連携フラグ（true:連携済み/false:未連携） */
+    private boolean googleLinked;
+    /** Googleから送られるsub（ユーザーID） */
+    private String googleSub;
 
+    public ExtendedUser() {}
     public ExtendedUser(
             String loginId,
             String username,
             String password,
+            String email,
             boolean enabled,
             boolean accountNonExpired,
             boolean credentialsNonExpired,
@@ -64,10 +76,12 @@ public class ExtendedUser implements UserDetails {
             int loginFailureCount,
             LocalDateTime lastLoginAt,
             LocalDateTime accountExpiryAt,
-            LocalDateTime passwordExpiryAt) {
+            LocalDateTime passwordExpiryAt,
+            boolean googleLinked) {
         this.loginId = loginId;
         this.username = username;
         this.password = password;
+        this.email = email;
         this.enabled = enabled;
         this.accountNonExpired = accountNonExpired;
         this.credentialsNonExpired = credentialsNonExpired;
@@ -77,6 +91,7 @@ public class ExtendedUser implements UserDetails {
         this.lastLoginAt = lastLoginAt;
         this.accountExpiryAt = accountExpiryAt;
         this.passwordExpiryAt = passwordExpiryAt;
+        this.googleLinked = googleLinked;
     }
 
     @Override
@@ -117,6 +132,7 @@ public class ExtendedUser implements UserDetails {
         private String loginId;
         private String username;
         private String password;
+        private String email;
         private boolean enabled;
         private boolean accountNonExpired;
         private boolean credentialsNonExpired;
@@ -126,6 +142,7 @@ public class ExtendedUser implements UserDetails {
         private LocalDateTime lastLoginAt;
         private LocalDateTime accountExpiryAt;
         private LocalDateTime passwordExpiryAt;
+        private boolean googleLinked;
 
         public Builder loginId(String loginId) {
             this.loginId = loginId;
@@ -139,6 +156,11 @@ public class ExtendedUser implements UserDetails {
 
         public Builder password(String password) {
             this.password = password;
+            return this;
+        }
+        
+        public Builder email(String email) {
+            this.email = email;
             return this;
         }
 
@@ -182,6 +204,11 @@ public class ExtendedUser implements UserDetails {
             return this;
         }
 
+        public Builder googleLinked(boolean googleLinked) {
+            this.googleLinked = googleLinked;
+            return this;
+        }
+        
         public void addAuthority(GrantedAuthority authority) {
             this.authorities.add(authority);
         }
@@ -221,6 +248,7 @@ public class ExtendedUser implements UserDetails {
                     this.loginId,
                     this.username,
                     this.password,
+                    this.email,
                     this.enabled,
                     accountNonExpired,
                     credentialsNonExpired,
@@ -229,7 +257,8 @@ public class ExtendedUser implements UserDetails {
                     this.loginFailureCount,
                     this.lastLoginAt,
                     this.accountExpiryAt,
-                    this.passwordExpiryAt);
+                    this.passwordExpiryAt,
+                    this.googleLinked);
         }
     }
     
@@ -248,6 +277,7 @@ public class ExtendedUser implements UserDetails {
                 ", lastLoginAt=" + lastLoginAt +
                 ", accountExpiryAt=" + accountExpiryAt +
                 ", passwordExpiryAt=" + passwordExpiryAt +
+                ", googleLinked=" + googleLinked +
                 ", authorities=" + authorities +
                 '}';
     }
@@ -266,7 +296,33 @@ public class ExtendedUser implements UserDetails {
     public int hashCode() {
         return Objects.hash(getLoginId());
     }
+
     // ------------------------------
     // 二重ログイン判定を行うため、オーバーライド　ここまで
     // ------------------------------
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> getClaims() {
+        return null;
+    }
+
+    @Override
+    public OidcUserInfo getUserInfo() {
+        return null;
+    }
+
+    @Override
+    public OidcIdToken getIdToken() {
+        return null;
+    }
 }

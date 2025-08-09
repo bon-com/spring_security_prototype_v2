@@ -28,7 +28,7 @@
 	</form>
 	<br>
 	<%-- Googleでログイン --%>
-    <a href="<c:url value='/oauth2/authorization/google' />">
+    <a href="<c:url value='/oauth2/authorization/google-login' />">
         <button>Googleでログイン</button>
     </a>
 </body>

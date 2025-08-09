@@ -22,6 +22,8 @@ public class UsersDto {
     private String loginId;
     /** 利用者氏名 */
     private String username;
+    /** メールアドレス */
+    private String email;
     /** マスク済みパスワード */
     private String maskedPassword = Constants.MASKING_ITEM;
     /** アカウント有効可否（true:有効/false:無効） */

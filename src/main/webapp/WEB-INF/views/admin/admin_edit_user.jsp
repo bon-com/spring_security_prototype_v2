@@ -9,6 +9,9 @@
 <body>
 	<jsp:include page="/WEB-INF/views/common/header.jsp" />
 	<h3>利用者情報編集</h3>
+	<p style="color: red;">
+		<c:out value="${warning}" />
+	</p>
 	<hr />
 	<form:form modelAttribute="usersForm" method="post" action="${pageContext.request.contextPath}/admin/users/edit/${usersForm.loginId}">
 		<sec:csrfInput />

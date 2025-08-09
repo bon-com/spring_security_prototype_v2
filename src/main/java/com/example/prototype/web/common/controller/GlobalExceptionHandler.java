@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({ IllegalStateException.class, IllegalArgumentException.class })
     public ModelAndView handleIllegalStateException(IllegalStateException ex, HttpSession session) {
         // 共通処理
-        return handleCommonError(ex, session, Constants.ERR_MSG_DEFAULT);
+        return handleCommonError(ex, session, ex.getMessage());
     }
     
     /** エラー時の共通処理 */

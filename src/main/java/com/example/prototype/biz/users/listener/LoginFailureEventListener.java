@@ -50,15 +50,15 @@ public class LoginFailureEventListener {
                 user.setLoginFailureCount(failureCount + 1);
             }
             usersService.updateAuthStatus(user);
+            
+            // 認証失敗ログ
+            Exception ex = event.getException();
+            String clientInfo = auth.getDetails().toString();
+            String failureType = ex.getClass().getSimpleName();
+            String message = ex.getMessage();
+            logger.info("\n★★認証失敗★★:\nログインID: {}\n・失敗理由: {} ({})\n・詳細: {}\n・ログイン失敗回数: {}\n・アカウントロック状態: {}\n", loginId, failureType,
+                    message, clientInfo, user.getLoginFailureCount(), user.isAccountNonLocked() ? Constants.ACCOUNT_NOT_LOCKED : Constants.ACCOUNT_LOCKED);
         }
-
-        // 認証失敗ログ
-        Exception ex = event.getException();
-        String clientInfo = auth.getDetails().toString();
-        String failureType = ex.getClass().getSimpleName();
-        String message = ex.getMessage();
-        logger.info("\n★★認証失敗★★:\nログインID: {}\n・失敗理由: {} ({})\n・詳細: {}\n・ログイン失敗回数: {}\n・アカウントロック状態: {}\n", loginId, failureType,
-                message, clientInfo, user.getLoginFailureCount(), user.isAccountNonLocked() ? Constants.ACCOUNT_NOT_LOCKED : Constants.ACCOUNT_LOCKED);
     }
 
 }

@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import com.example.prototype.biz.users.entity.ExtendedUser;
@@ -30,13 +29,14 @@ public class JdbcUsersDao {
     /** エンティティマッパー（1件取得用） */
     private final ResultSetExtractor<ExtendedUser> userExtractor = rs -> {
         if (!rs.next()) {
-            throw new UsernameNotFoundException(Constants.ERR_MSG_AUTHENTICATION_BAD_CREDENTIALS);
+            return null;
         }
 
         var builder = ExtendedUser.builder()
         .loginId(rs.getString("login_id")) // ログインID
         .username(rs.getString("username")) // 利用者氏名
         .password(rs.getString("password")) // パスワード
+        .email(rs.getString("email")) // メールアドレス
         .enabled(rs.getBoolean("enabled")) // enabled（アカウント有効可否）
         .accountNonLocked(rs.getBoolean("account_non_locked")) // アカウントロック状態（true:ロック無し/false:ロック有り）
         .loginFailureCount(rs.getInt("login_failure_count")) // ログイン失敗回数
@@ -44,7 +44,8 @@ public class JdbcUsersDao {
                 ? rs.getTimestamp("last_login_at").toLocalDateTime()
                 : null)
         .accountExpiryAt(rs.getTimestamp("account_expiry_at").toLocalDateTime()) // アカウント有効期限日時
-        .passwordExpiryAt(rs.getTimestamp("password_expiry_at").toLocalDateTime()); // パスワード有効期限日時
+        .passwordExpiryAt(rs.getTimestamp("password_expiry_at").toLocalDateTime()) // パスワード有効期限日時
+        .googleLinked(rs.getBoolean("google_linked")); // Google連携フラグ
         
         do {
             String authority = rs.getString("authority");
@@ -72,6 +73,7 @@ public class JdbcUsersDao {
                         .loginId(loginId)
                         .username(rs.getString("username"))
                         .password(rs.getString("password"))
+                        .password(rs.getString("email"))
                         .enabled(rs.getBoolean("enabled"))
                         .accountNonLocked(rs.getBoolean("account_non_locked"))
                         .loginFailureCount(rs.getInt("login_failure_count"))
@@ -79,7 +81,8 @@ public class JdbcUsersDao {
                                 ? rs.getTimestamp("last_login_at").toLocalDateTime()
                                 : null)
                         .accountExpiryAt(rs.getTimestamp("account_expiry_at").toLocalDateTime())
-                        .passwordExpiryAt(rs.getTimestamp("password_expiry_at").toLocalDateTime());
+                        .passwordExpiryAt(rs.getTimestamp("password_expiry_at").toLocalDateTime())
+                        .googleLinked(rs.getBoolean("google_linked")); 
 
                 userBuilderMap.put(loginId, builder);
             }
@@ -109,12 +112,14 @@ public class JdbcUsersDao {
         sql.append("u.login_id AS login_id, ");
         sql.append("u.username AS username, ");
         sql.append("u.password AS password, ");
+        sql.append("u.email AS email, ");
         sql.append("u.enabled AS enabled, ");
         sql.append("u.account_non_locked AS account_non_locked, ");
         sql.append("u.login_failure_count AS login_failure_count, ");
         sql.append("u.last_login_at AS last_login_at, ");
         sql.append("u.account_expiry_at AS account_expiry_at, ");
         sql.append("u.password_expiry_at AS password_expiry_at, ");
+        sql.append("u.google_linked AS google_linked, ");
         sql.append("am.authority_code AS authority ");
         sql.append("FROM users u ");
         sql.append("INNER JOIN authorities a ON u.login_id = a.login_id ");
@@ -138,7 +143,7 @@ public class JdbcUsersDao {
         int count = findCountByLoginId(user.getLoginId());
         if (count == 0) {
             // 更新対象なし
-            throw new IllegalStateException(Constants.MSG_UPDATE_ERR + ": loginId=" + user.getLoginId());
+            throw new IllegalStateException(Constants.ERR_MSG_UPDATE_FAILURE + ": loginId=" + user.getLoginId());
         }
 
         // 認証情報更新
@@ -167,7 +172,7 @@ public class JdbcUsersDao {
         int count = findCountByLoginId(loginId);
         if (count == 0) {
             // 更新対象なし
-            throw new IllegalStateException(Constants.MSG_UPDATE_ERR + ": loginId=" + loginId);
+            throw new IllegalStateException(Constants.ERR_MSG_UPDATE_FAILURE + ": loginId=" + loginId);
         }
 
         var sql = new StringBuilder();
@@ -208,12 +213,14 @@ public class JdbcUsersDao {
         sql.append("u.login_id as login_id, ");
         sql.append("u.username as username, ");
         sql.append("u.password as password, ");
+        sql.append("u.email as email, ");
         sql.append("u.enabled as enabled, ");
         sql.append("u.account_non_locked as account_non_locked, ");
         sql.append("u.login_failure_count as login_failure_count, ");
         sql.append("u.last_login_at as last_login_at, ");
         sql.append("u.account_expiry_at as account_expiry_at, ");
         sql.append("u.password_expiry_at as password_expiry_at, ");
+        sql.append("u.google_linked AS google_linked, ");
         sql.append("am.authority_code as authority ");
         sql.append("FROM users u ");
         sql.append("INNER JOIN authorities a ON u.login_id = a.login_id ");
@@ -230,10 +237,10 @@ public class JdbcUsersDao {
     public void insert(ExtendedUser user) {
         var sql = new StringBuilder();
         sql.append("INSERT INTO users (");
-        sql.append("login_id, username, password, enabled, account_non_locked, ");
+        sql.append("login_id, username, password, email, enabled, account_non_locked, ");
         sql.append("login_failure_count, account_expiry_at, password_expiry_at");
         sql.append(") VALUES (");
-        sql.append(":loginId, :username, :password, :enabled, :accountNonLocked, ");
+        sql.append(":loginId, :username, :password, :email, :enabled, :accountNonLocked, ");
         sql.append(":loginFailureCount, :accountExpiryAt, :passwordExpiryAt");
         sql.append(")");
         var param = new BeanPropertySqlParameterSource(user);
@@ -249,18 +256,11 @@ public class JdbcUsersDao {
      * @param user
      */
     public void update(ExtendedUser user) {
-        // 利用者チェック
-        String loginId = user.getLoginId();
-        int count = findCountByLoginId(user.getLoginId());
-        if (count == 0) {
-            // 更新対象なし
-            throw new IllegalStateException(Constants.MSG_UPDATE_ERR + ": loginId=" + loginId);
-        }
-        
         var sql = new StringBuilder();
         sql.append("UPDATE users SET ");
         sql.append("username = :username, ");
         sql.append("password = :password, ");
+        sql.append("email = :email, ");
         sql.append("enabled = :enabled, ");
         sql.append("account_non_locked = :accountNonLocked, ");
         sql.append("login_failure_count = :loginFailureCount, ");
@@ -274,4 +274,84 @@ public class JdbcUsersDao {
                 sql, user);
         namedParameterJdbcTemplate.update(sql.toString(), param);
     }
+
+    /**
+     * メールアドレス検索
+     * 検索結果件数を返却
+     * @param email
+     * @return
+     */
+    public int findCountByEmail(String email) {
+        var sql = "SELECT COUNT(*) FROM users WHERE email = :email";
+        var param = new MapSqlParameterSource("email", email);
+
+        logger.debug("\n★★SQL実行★★\n・クラス=JdbcUsersDao\n・メソッド=findCountByEmail\n・SQL={}\n・パラメータ={}\n",
+                sql, email);
+        return namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class);
+    }
+    
+    /**
+     * GoogleユーザーID検索（Google認証用）
+     * @param sub
+     * @return
+     */
+    public ExtendedUser findByGoogleSub(String sub) {
+        var sql = new StringBuilder();
+        sql.append("SELECT ");
+        sql.append("u.login_id AS login_id, ");
+        sql.append("u.username AS username, ");
+        sql.append("u.password AS password, ");
+        sql.append("u.email AS email, ");
+        sql.append("u.enabled AS enabled, ");
+        sql.append("u.account_non_locked AS account_non_locked, ");
+        sql.append("u.login_failure_count AS login_failure_count, ");
+        sql.append("u.last_login_at AS last_login_at, ");
+        sql.append("u.account_expiry_at AS account_expiry_at, ");
+        sql.append("u.password_expiry_at AS password_expiry_at, ");
+        sql.append("u.google_linked AS google_linked, ");
+        sql.append("am.authority_code AS authority ");
+        sql.append("FROM users u ");
+        sql.append("INNER JOIN authorities a ON u.login_id = a.login_id ");
+        sql.append("INNER JOIN authority_master am ON a.authority_id = am.authority_id ");
+        sql.append("WHERE u.google_sub = :sub and u.google_linked = true");
+
+        var param = new MapSqlParameterSource();
+        param.addValue("sub", sub);
+
+        logger.debug("\n★★SQL実行★★\n・クラス=JdbcUsersDao\n・メソッド=findByGoogleSub\n・SQL={}\n・パラメータ={}\n", sql, "*****");
+        return namedParameterJdbcTemplate.query(sql.toString(), param, userExtractor);
+    }
+    
+    /**
+     * GoogleユーザーID更新
+     * @param user
+     */
+    public void updateGoogleSub(ExtendedUser user) {
+        var sql = new StringBuilder();
+        sql.append("UPDATE users SET ");
+        sql.append("google_linked = :googleLinked, ");
+        sql.append("google_sub = :googleSub ");
+        sql.append("WHERE login_id = :loginId");
+        var param = new BeanPropertySqlParameterSource(user);
+
+        logger.debug(
+                "\n★★SQL実行★★\n・クラス=JdbcUsersDao\n・メソッド=updateGoogleSub\n・SQL={}\n・パラメータ={}\n",
+                sql, user);
+        namedParameterJdbcTemplate.update(sql.toString(), param);
+    }
+
+    /**
+     * Google連携フラグ取得
+     * @param loginId
+     * @return
+     */
+    public boolean findGoogleLinkedByLoginId(String loginId) {
+        var sql = "SELECT google_linked FROM users WHERE login_id = :loginId";
+        var param = new MapSqlParameterSource("loginId", loginId);
+
+        logger.debug("\n★★SQL実行★★\n・クラス=JdbcUsersDao\n・メソッド=findGoogleLinkedByLoginId\n・SQL={}\n・パラメータ={}\n",
+                sql, loginId);
+        return namedParameterJdbcTemplate.queryForObject(sql, param, Boolean.class);
+    }
+    
 }

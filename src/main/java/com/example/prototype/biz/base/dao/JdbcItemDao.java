@@ -70,7 +70,7 @@ public class JdbcItemDao {
         logger.debug("\n★★SQL実行★★\n・クラス=JdbcItemDao\n・メソッド=updateDeleted\n・SQL={}\n・パラメータ={}\n", sql, id);
         int count = namedParameterJdbcTemplate.update(sql, param);
         if (count == 0) {
-            throw new IllegalStateException(Constants.MSG_UPDATE_ERR);
+            throw new IllegalStateException(Constants.ERR_MSG_UPDATE_FAILURE);
         }
     }
 

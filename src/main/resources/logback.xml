@@ -17,7 +17,7 @@
 	<logger name="org.springframework.web" level="INFO" /> <!-- DispatcherServlet関連も見たい場合 -->
 
 	<!-- ルートログ設定 -->
-	<root level="INFO">
+	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

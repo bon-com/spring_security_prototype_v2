@@ -16,6 +16,7 @@ import com.example.prototype.biz.users.dao.JdbcAuthoritiesDao;
 import com.example.prototype.biz.users.dao.JdbcUsersDao;
 import com.example.prototype.biz.users.entity.Authorities;
 import com.example.prototype.biz.users.entity.ExtendedUser;
+import com.example.prototype.common.constants.Constants;
 import com.example.prototype.web.users.dto.AuthoritiesDto;
 import com.example.prototype.web.users.dto.AuthorityMasterDto;
 import com.example.prototype.web.users.dto.UsersDto;
@@ -101,6 +102,7 @@ public class UsersService {
                 .loginId(form.getLoginId())
                 .username(form.getUsername())
                 .password(passwordEncoder.encode(form.getPassword()))
+                .email(form.getEmail())
                 .enabled(form.isEnabled())
                 .accountNonLocked(form.isAccountNonLocked())
                 .accountExpiryAt(form.getAccountExpiryAt())
@@ -123,6 +125,9 @@ public class UsersService {
      */
     public UsersDto findByLoginId(String loginId) {
         ExtendedUser user = jdbcUsersDao.findByLoginId(loginId);
+        if (user == null) {
+            throw new IllegalStateException(Constants.ERR_MSG_NO_USER);
+        }
         
         var dto = new UsersDto();
         BeanUtils.copyProperties(user, dto);
@@ -176,11 +181,19 @@ public class UsersService {
      * @param form
      */
     public void updateUser(UsersForm form) {
+        // 利用者確認
+        int count = findCountByLoginId(form.getLoginId());
+        if (count == 0) {
+            // 更新対象なし
+            throw new IllegalStateException(Constants.ERR_MSG_UPDATE_FAILURE + ": loginId=" + form.getLoginId());
+        }
+        
         // 更新エンティティ作成
         var user = ExtendedUser.builder()
                 .loginId(form.getLoginId())
                 .username(form.getUsername())
                 .password(passwordEncoder.encode(form.getPassword()))
+                .email(form.getEmail())
                 .enabled(form.isEnabled())
                 .accountNonLocked(form.isAccountNonLocked())
                 .accountExpiryAt(form.getAccountExpiryAt())
@@ -197,4 +210,40 @@ public class UsersService {
             jdbcAuthoritiesDao.insert(authority);
         });
     }
+    
+    /**
+     * メールアドレス検索
+     * @param email
+     * @return
+     */
+    public int findCountByEmail(String email) {
+        return jdbcUsersDao.findCountByEmail(email);
+    }
+    
+    /**
+     * GoogleユーザーID検索（Google認証用）
+     * @param sub
+     * @return
+     */
+    public ExtendedUser findByGoogleSub(String sub) {
+        return jdbcUsersDao.findByGoogleSub(sub);
+    } 
+    
+    /**
+     * Google連携情報更新
+     * @param user
+     */
+    public void updateGoogleSub(ExtendedUser user) {
+        jdbcUsersDao.updateGoogleSub(user);
+    }
+    
+    /**
+     * Google連携フラグ取得
+     * @param loginId
+     * @return
+     */
+    public boolean findGoogleLinkedByLoginId(String loginId) {
+        return jdbcUsersDao.findGoogleLinkedByLoginId(loginId); 
+    }
 }
+

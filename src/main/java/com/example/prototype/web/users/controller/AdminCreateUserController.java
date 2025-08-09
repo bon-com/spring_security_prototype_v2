@@ -86,6 +86,7 @@ public class AdminCreateUserController {
     public String confirm(UsersForm form, Model model) {
         model.addAttribute("loginId", form.getLoginId());
         model.addAttribute("username", form.getUsername());
+        model.addAttribute("email", form.getEmail());
         model.addAttribute("enabled", form.isEnabled());
         model.addAttribute("accountExpiryAt", DataUtil.convertDateFromLocalDateTime(form.getAccountExpiryAt()));
         model.addAttribute("passwordExpiryAt", DataUtil.convertDateFromLocalDateTime(form.getPasswordExpiryAt()));

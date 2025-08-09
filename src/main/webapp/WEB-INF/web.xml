@@ -89,6 +89,6 @@
 	</listener>
 	<!-- セッションタイムアウト設定（指定しない場合はデフォルトで30分） -->
 	<session-config>
-		<session-timeout>1</session-timeout> <!-- 単位は分 -->
+		<session-timeout>30</session-timeout> <!-- 単位は分 -->
 	</session-config>
 </web-app>

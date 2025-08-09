@@ -33,6 +33,11 @@ public class UsersForm {
     @NotNull
     @Pattern(regexp = "^[a-zA-Z0-9]{8,16}$", message = "パスワードは半角英数字8〜16文字で入力してください")
     private String password;
+    @Pattern(
+            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",
+            message = "メールアドレスの形式が正しくありません"
+        )
+    private String email;
     /** 確認用パスワード */
     @NotNull
     private String confirmPassword;

@@ -42,6 +42,15 @@
 		</td>
 	</tr>
 	<tr>
+		<th>メールアドレス</th>
+		<td>
+			<form:input path="email" />
+		</td>
+		<td>
+			<form:errors path="email" cssStyle="color: red;" />
+		</td>
+	</tr>
+	<tr>
 		<th>アカウント有効状態</th>
 		<td>
 			<label>
