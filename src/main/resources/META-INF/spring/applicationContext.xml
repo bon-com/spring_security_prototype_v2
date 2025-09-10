@@ -38,6 +38,7 @@
 	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
 			<tx:method name="find*" read-only="true" />
+			<tx:method name="validate*" read-only="true" />
 			<tx:method name="insert*" propagation="REQUIRED" isolation="READ_COMMITTED" timeout="10" read-only="false" rollback-for="Exception" />
 			<tx:method name="update*" propagation="REQUIRED" isolation="READ_COMMITTED" timeout="10" read-only="false" rollback-for="Exception" />
 		</tx:attributes>

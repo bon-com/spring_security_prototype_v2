@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -218,6 +219,36 @@ public class UsersService {
      */
     public int findCountByEmail(String email) {
         return jdbcUsersDao.findCountByEmail(email);
+    }
+    
+    /**
+     * メールアドレス編集前確認（true:更新可能/false:重複のため更新不可能）
+     * @param loginId
+     * @param email
+     * @return
+     */
+    public boolean validateUpdateEmail(String loginId, String email) {
+        // 利用者のメールアドレス取得
+        UsersDto user = findByLoginId(loginId);
+        String registerdEmail = user.getEmail();
+        
+        if (StringUtils.isEmpty(registerdEmail)) {
+            // メールアドレス未登録の場合
+            return true;
+        }
+        
+        if (registerdEmail.equals(email)) {
+            // 登録済みメールアドレスに変更なしの場合
+            return true;
+        }
+        
+        // 他に登録されたメールアドレスとの重複チェック
+        int count = findCountByEmail(email);
+        if (count == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
     /**

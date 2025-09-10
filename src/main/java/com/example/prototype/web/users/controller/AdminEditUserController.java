@@ -83,8 +83,8 @@ public class AdminEditUserController {
         
         // メールアドレスの重複チェック
         if (form.getEmail() != null) {
-            int count = userService.findCountByEmail(form.getEmail()); 
-            if (count != 0) {
+            boolean isUpdatePossible = userService.validateUpdateEmail(form.getLoginId(), form.getEmail());
+            if (!isUpdatePossible) {
                 model.addAttribute("warning", Constants.ERR_MSG_EMAIL_DUPLICATE);
                 return "admin/admin_edit_user";
             }
