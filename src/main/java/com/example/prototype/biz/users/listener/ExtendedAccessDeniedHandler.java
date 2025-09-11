@@ -31,11 +31,18 @@ public class ExtendedAccessDeniedHandler implements AccessDeniedHandler {
                        HttpServletResponse response,
                        AccessDeniedException ex) throws IOException {
         
-        // 不正アクセス者のログ
         var auth = (Authentication) request.getUserPrincipal();
-        var authUser = (ExtendedUser) auth.getPrincipal();
+        String loginId = ""; 
+        if (auth == null) {
+            loginId = "不正なユーザー";
+        } else {
+            var authUser = (ExtendedUser) auth.getPrincipal();
+            loginId = authUser.getLoginId();
+        }
+        
+        // 不正アクセス者のログ
         logger.warn("\n★★不正アクセス★★\n・ログインID: {}\n・アクセスパス: {}\n・理由: {}\n",
-                authUser.getLoginId(), request.getRequestURI(), ex.getMessage());
+                loginId, request.getRequestURI(), ex.getMessage());
         
         // エラー画面にリダイレクト
         response.sendRedirect(request.getContextPath() + "/system/error?code=403");
