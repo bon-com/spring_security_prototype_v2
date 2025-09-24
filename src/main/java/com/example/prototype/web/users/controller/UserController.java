@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.prototype.biz.users.entity.ExtendedUser;
 import com.example.prototype.biz.users.service.UsersService;
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.common.constants.Constants;
 import com.example.prototype.web.users.dto.UserPasswordForm;
 
@@ -23,6 +24,9 @@ import com.example.prototype.web.users.dto.UserPasswordForm;
 public class UserController {
     @Autowired
     private UsersService userService;
+
+    @Autowired
+    private MessageUtil messageUtil;
     
     @ModelAttribute
     public UserPasswordForm setUp() {
@@ -36,7 +40,7 @@ public class UserController {
     @GetMapping(value = "/password-update")
     public String password(@RequestParam(name = "msgKey", required = false) String msgKey, Model model) {
         if (Constants.UPDATE_SUCCESS_KEY.equals(msgKey)) {
-            model.addAttribute("message", Constants.MSG_UPDATE_SUCCESS);
+            model.addAttribute("message", messageUtil.getMessage(Constants.MSG_UPDATE_SUCCESS));
         }
         
         return "user/user_update_password";
@@ -59,6 +63,6 @@ public class UserController {
         authUser.setPassword(form.getNewPassword());
         userService.updatePassword(authUser);
         
-        return "redirect:/user/password-update?msgKey=" + Constants.UPDATE_SUCCESS_KEY;
+        return "redirect:/user/password-update?msgKey=" + messageUtil.getMessage((Constants.UPDATE_SUCCESS_KEY));
     }
 }

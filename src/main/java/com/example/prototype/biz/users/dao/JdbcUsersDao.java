@@ -16,6 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Repository;
 
 import com.example.prototype.biz.users.entity.ExtendedUser;
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.common.constants.Constants;
 
 @Repository
@@ -26,6 +27,9 @@ public class JdbcUsersDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Autowired
+    private MessageUtil messageUtil;
+    
     /** エンティティマッパー（1件取得用） */
     private final ResultSetExtractor<ExtendedUser> userExtractor = rs -> {
         if (!rs.next()) {
@@ -143,7 +147,7 @@ public class JdbcUsersDao {
         int count = findCountByLoginId(user.getLoginId());
         if (count == 0) {
             // 更新対象なし
-            throw new IllegalStateException(Constants.ERR_MSG_UPDATE_FAILURE + ": loginId=" + user.getLoginId());
+            throw new IllegalStateException(messageUtil.getMessage(Constants.ERR_MSG_UPDATE_FAILURE) + ": loginId=" + user.getLoginId());
         }
 
         // 認証情報更新
@@ -172,7 +176,7 @@ public class JdbcUsersDao {
         int count = findCountByLoginId(loginId);
         if (count == 0) {
             // 更新対象なし
-            throw new IllegalStateException(Constants.ERR_MSG_UPDATE_FAILURE + ": loginId=" + loginId);
+            throw new IllegalStateException(messageUtil.getMessage(Constants.ERR_MSG_UPDATE_FAILURE) + ": loginId=" + loginId);
         }
 
         var sql = new StringBuilder();

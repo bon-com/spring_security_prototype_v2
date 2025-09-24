@@ -235,7 +235,7 @@ public class ExtendedUser implements OidcUser, UserDetails {
             if (!missingFields.isEmpty()) {
                 // 必須項目チェックエラー
                 throw new IllegalStateException(
-                        Constants.ERR_MSG_DEFAULT + " 必須フィールド: " + String.join(", ", missingFields));
+                        "予期せぬエラーが発生しました 必須フィールド: " + String.join(", ", missingFields));
             }
 
             var now = LocalDateTime.now();

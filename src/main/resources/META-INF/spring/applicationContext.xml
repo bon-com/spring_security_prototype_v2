@@ -48,8 +48,14 @@
 		<aop:advisor advice-ref="txAdvice" pointcut="execution(* *..*Service.*(..))" />
 	</aop:config>
 	<!-- メッセージソース -->
-	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-		<property name="basenames" value="messages" />
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>messages</value> <!-- 自作 -->
+				<value>org/springframework/security/messages</value> <!-- Spring SecurityのJAR内 -->
+			</list>
+		</property>
 	</bean>
 	<!-- プロパティファイル参照 -->
 	<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">

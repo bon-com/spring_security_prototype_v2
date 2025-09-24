@@ -18,6 +18,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.example.prototype.biz.app.initializer.MasterLoader;
 import com.example.prototype.biz.users.service.UsersService;
 import com.example.prototype.biz.utils.DataUtil;
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.common.constants.Constants;
 import com.example.prototype.web.users.dto.AuthorityMasterDto;
 import com.example.prototype.web.users.dto.UsersForm;
@@ -31,6 +32,9 @@ public class AdminCreateUserController {
     
     @Autowired
     private MasterLoader masterLoader; 
+    
+    @Autowired
+    private MessageUtil messageUtil;
     
     @ModelAttribute
     public UsersForm setUpUsersForm() {
@@ -68,7 +72,7 @@ public class AdminCreateUserController {
         // ログインID重複確認
         int count = userService.findCountByLoginId(form.getLoginId());
         if (count != 0) {
-            model.addAttribute("warning", Constants.ERR_MSG_LOGIN_ID_DUPLICATE);
+            model.addAttribute("warning", messageUtil.getMessage(Constants.ERR_MSG_LOGIN_ID_DUPLICATE));
             return "admin/admin_create_user";
         }
         

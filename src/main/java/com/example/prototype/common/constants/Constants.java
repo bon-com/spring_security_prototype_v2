@@ -5,43 +5,37 @@ package com.example.prototype.common.constants;
  */
 public class Constants {
     /** 認可エラーメッセージ */
-    public static final String ERR_MSG_403 = "アクセス権限がありません";
+    public static final String ERR_MSG_403 = "error.message.403";
     /** システムエラーメッセージ */
-    public static final String ERR_MSG_500 = "システムエラーが発生しました";
+    public static final String ERR_MSG_500 = "error.message.500";
     /** その他エラーメッセージ */
-    public static final String ERR_MSG_DEFAULT = "予期せぬエラーが発生しました";
-    /** 認証エラーメッセージ */
-    public static final String ERR_MSG_AUTHENTICATION_BAD_CREDENTIALS = "ログインIDまたはパスワードが間違っています";
-    /** パスワード相関チェックエラーメッセージ */
-    public static final String ERR_MSG_PASSWORDS_NOT_MATCH = "パスワードと確認用パスワードが一致しません";
-    /** 相関チェック異常エラーメッセージ */
-    public static final String ERR_MSG_PROPERTY_ACCESS_FAILED = "指定されたフィールドの取得に失敗しました";
+    public static final String ERR_MSG_DEFAULT = "error.message.default";
     /** ログインID重複エラーメッセージ */
-    public static final String ERR_MSG_LOGIN_ID_DUPLICATE = "ログインIDが既に登録されています";
+    public static final String ERR_MSG_LOGIN_ID_DUPLICATE = "error.message.login.id.duplicate";
     /** メールアドレス重複エラーメッセージ */
-    public static final String ERR_MSG_EMAIL_DUPLICATE = "メールアドレスが既に登録されています";
+    public static final String ERR_MSG_EMAIL_DUPLICATE = "error.message.email.duplicate";
     /** セッションタイムアウトエラーメッセージ */
-    public static final String ERR_MSG_INVALID_SESSION = "セッションが切れたため、再度ログインしてください";
+    public static final String ERR_MSG_INVALID_SESSION = "error.message.invalid.session";
     /** 利用者取得エラーメッセージ */
-    public static final String ERR_MSG_NO_USER = "利用者の取得に失敗しました";
+    public static final String ERR_MSG_NO_USER = "error.message.no.user";
     /** 認証エラーエラーメッセージ（Google OAuth2ログイン） */
-    public static final String ERR_MSG_GOOGLE_OAUTH_FAILURE = "Gmailが紐づいていません";
+    public static final String ERR_MSG_GOOGLE_OAUTH_FAILURE = "error.message.google.oauth.failure";
     /** 更新完了メッセージ */
-    public static final String MSG_UPDATE_SUCCESS = "更新完了しました";
+    public static final String MSG_UPDATE_SUCCESS = "message.update.success";
     /** 更新失敗メッセージ */
-    public static final String ERR_MSG_UPDATE_FAILURE = "更新に失敗しました";
+    public static final String ERR_MSG_UPDATE_FAILURE = "error.message.update.failure";
     /** Google紐づけ成功メッセージ */
-    public static final String MSG_UPDATE_GOOGLE_SUB_SUCCESS = "Googleアカウントの紐づけ完了しました";
+    public static final String MSG_UPDATE_GOOGLE_SUB_SUCCESS = "message.update.google.sub.success";
     /** Google紐づけ失敗メッセージ */
-    public static final String ERR_MSG_UPDATE_GOOGLE_FAILURE = "Googleアカウントと登録メールアドレスが一致しません";
+    public static final String ERR_MSG_UPDATE_GOOGLE_FAILURE = "error.message.update.google.failure";
     /** Google紐づけ解除メッセージ */
-    public static final String MSG_CANSEL_GOOGLE_SUB = "Googleアカウントの紐づけ状態を解除しました";
+    public static final String MSG_CANSEL_GOOGLE_SUB = "message.cansel.google.sub";
     /** 登録完了メッセージ */
-    public static final String MSG_INSERT_SUCCESS = "登録完了しました";
+    public static final String MSG_INSERT_SUCCESS = "message.insert.success";
     /** パスワード有効期限切れ事前通知メッセージ */
-    public static final String MSG_PASSWORD_EXPIRY_TEMPLATE = "パスワードの有効期限まで%d日のため、パスワードを変更してください";
+    public static final String MSG_PASSWORD_EXPIRY_TEMPLATE = "message.password.expiry.template";
     /** 一度の商品購入限度数メッセージ */
-    public static final String MSG_MAX_PURCHASE_QUANTITY = "一度の購入は10個までです";
+    public static final String MSG_MAX_PURCHASE_QUANTITY = "message.max.purchase.quantity";
     /** アカウントロック種別：ロックあり */
     public static final String ACCOUNT_LOCKED = "ロックあり";
     /** アカウントロック種別：ロックなし */

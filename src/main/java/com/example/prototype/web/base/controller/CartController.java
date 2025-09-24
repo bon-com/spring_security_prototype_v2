@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.prototype.biz.base.service.CartService;
 import com.example.prototype.biz.base.service.ItemService;
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.common.constants.Constants;
 import com.example.prototype.web.base.dto.CartAddForm;
 import com.example.prototype.web.base.dto.CartDto;
@@ -31,7 +32,9 @@ public class CartController {
     /** カートサービス */
     @Autowired
     private CartService cartService;
-
+    @Autowired
+    private MessageUtil messageUtil;
+    
     @ModelAttribute("items")
     public List<ItemDto> setUp() {
         return itemService.findAll();
@@ -49,7 +52,7 @@ public class CartController {
         if (cartItem != null) {
             int cartQuantity = cartItem.getQuantity() + form.getQuantity();
             if (cartQuantity > Constants.MAX_PURCHASE_QUANTITY) {
-                model.addAttribute("warning", Constants.MSG_MAX_PURCHASE_QUANTITY);
+                model.addAttribute("warning", messageUtil.getMessage(Constants.MSG_MAX_PURCHASE_QUANTITY));
                 return "base/items";
             }
         }

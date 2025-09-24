@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.biz.utils.SessionCleaner;
 import com.example.prototype.common.constants.Constants;
 
@@ -22,10 +23,13 @@ public class GlobalExceptionHandler {
     @Autowired
     private SessionCleaner sessionCleaner;
     
+    @Autowired
+    private MessageUtil messageUtil;
+    
     @ExceptionHandler({ DataAccessException.class })
     public ModelAndView handleDataAccessException(DataAccessException ex, HttpSession session) {
         // 共通処理
-        return handleCommonError(ex, session, Constants.ERR_MSG_500);
+        return handleCommonError(ex, session, messageUtil.getMessage(Constants.ERR_MSG_500));
     }
     
     @ExceptionHandler({ IllegalStateException.class, IllegalArgumentException.class })

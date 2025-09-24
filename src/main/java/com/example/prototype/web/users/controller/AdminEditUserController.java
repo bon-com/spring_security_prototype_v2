@@ -21,6 +21,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.example.prototype.biz.app.initializer.MasterLoader;
 import com.example.prototype.biz.users.service.UsersService;
 import com.example.prototype.biz.utils.DataUtil;
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.common.constants.Constants;
 import com.example.prototype.web.users.dto.AuthorityMasterDto;
 import com.example.prototype.web.users.dto.UsersDto;
@@ -35,6 +36,9 @@ public class AdminEditUserController {
     
     @Autowired
     private MasterLoader masterLoader; 
+    
+    @Autowired
+    private MessageUtil messageUtil;
     
     @ModelAttribute("authorityList")
     public List<AuthorityMasterDto> setUpAuthorityList() {
@@ -85,7 +89,7 @@ public class AdminEditUserController {
         if (form.getEmail() != null) {
             boolean isUpdatePossible = userService.validateUpdateEmail(form.getLoginId(), form.getEmail());
             if (!isUpdatePossible) {
-                model.addAttribute("warning", Constants.ERR_MSG_EMAIL_DUPLICATE);
+                model.addAttribute("warning", messageUtil.getMessage(Constants.ERR_MSG_EMAIL_DUPLICATE));
                 return "admin/admin_edit_user";
             }
         }

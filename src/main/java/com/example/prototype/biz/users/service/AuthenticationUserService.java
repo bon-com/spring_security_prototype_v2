@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.prototype.biz.users.dao.JdbcUsersDao;
 import com.example.prototype.biz.users.entity.ExtendedUser;
-import com.example.prototype.common.constants.Constants;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 /**
@@ -26,13 +25,13 @@ public class AuthenticationUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
         // 入力値検証
         if (StringUtils.isBlank(loginId)) {
-            throw new UsernameNotFoundException(Constants.ERR_MSG_AUTHENTICATION_BAD_CREDENTIALS);
+            throw new UsernameNotFoundException("");
         }
         
         // ログインID検索
         ExtendedUser user = jdbcUsersDao.findByLoginId(loginId);
         if (user == null) {
-            throw new UsernameNotFoundException(Constants.ERR_MSG_AUTHENTICATION_BAD_CREDENTIALS);
+            throw new UsernameNotFoundException("");
         }
         
         return user;

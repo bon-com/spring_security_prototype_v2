@@ -7,8 +7,6 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.example.prototype.common.constants.Constants;
-
 /**
  * 相関チェックカスタムBeanバリデーター
  */
@@ -50,7 +48,7 @@ public class FieldsMatchValidator implements ConstraintValidator<FieldsMatch, Ob
         } catch (Exception ex) {
             // BeanUtilsにてフィールド取得失敗
             logger.warn("\n★★フィールド取得失敗★★\n・フィールド①: {}\n・フィールド②: {}\n", field, confirmField);
-            throw new IllegalArgumentException(Constants.ERR_MSG_PROPERTY_ACCESS_FAILED);
+            throw new IllegalArgumentException("指定されたフィールドの取得に失敗しました");
         }
     }
 }

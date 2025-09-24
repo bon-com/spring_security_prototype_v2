@@ -10,7 +10,6 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.example.prototype.common.constants.Constants;
 import com.example.prototype.web.common.validator.FieldsMatch;
 
 import lombok.Data;
@@ -19,7 +18,7 @@ import lombok.Data;
  * 利用者フォーム
  */
 @Data
-@FieldsMatch(field = "password", confirmField = "confirmPassword", errorField = "confirmPassword", message = Constants.ERR_MSG_PASSWORDS_NOT_MATCH)
+@FieldsMatch(field = "password", confirmField = "confirmPassword", errorField = "confirmPassword", message = "パスワードと確認用パスワードが一致しません")
 public class UsersForm {
     /** ログインID */
     @NotNull

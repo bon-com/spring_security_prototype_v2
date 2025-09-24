@@ -17,6 +17,7 @@ import com.example.prototype.biz.users.dao.JdbcAuthoritiesDao;
 import com.example.prototype.biz.users.dao.JdbcUsersDao;
 import com.example.prototype.biz.users.entity.Authorities;
 import com.example.prototype.biz.users.entity.ExtendedUser;
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.common.constants.Constants;
 import com.example.prototype.web.users.dto.AuthoritiesDto;
 import com.example.prototype.web.users.dto.AuthorityMasterDto;
@@ -39,6 +40,9 @@ public class UsersService {
     
     @Autowired
     private MasterLoader masterLoader;
+    
+    @Autowired
+    private MessageUtil messageUtil;
 
     /** パスワード有効期間 */
     @Value("${auth.password.expiry.period.days}")
@@ -127,7 +131,7 @@ public class UsersService {
     public UsersDto findByLoginId(String loginId) {
         ExtendedUser user = jdbcUsersDao.findByLoginId(loginId);
         if (user == null) {
-            throw new IllegalStateException(Constants.ERR_MSG_NO_USER);
+            throw new IllegalStateException(messageUtil.getMessage(Constants.ERR_MSG_NO_USER));
         }
         
         var dto = new UsersDto();
@@ -186,7 +190,7 @@ public class UsersService {
         int count = findCountByLoginId(form.getLoginId());
         if (count == 0) {
             // 更新対象なし
-            throw new IllegalStateException(Constants.ERR_MSG_UPDATE_FAILURE + ": loginId=" + form.getLoginId());
+            throw new IllegalStateException(messageUtil.getMessage(Constants.ERR_MSG_UPDATE_FAILURE) + ": loginId=" + form.getLoginId());
         }
         
         // 更新エンティティ作成

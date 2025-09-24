@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.prototype.biz.base.service.ItemService;
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.common.constants.Constants;
 import com.example.prototype.web.base.dto.ItemDto;
 import com.example.prototype.web.base.dto.ItemForm;
@@ -26,6 +27,9 @@ public class AdminItemController {
     @Autowired
     private ItemService itemService;
 
+    @Autowired
+    private MessageUtil messageUtil;
+    
     @ModelAttribute
     public ItemForm setUpItemForm() {
         return new ItemForm();
@@ -45,10 +49,10 @@ public class AdminItemController {
     public String items(@RequestParam(name = "msgKey", required = false) String msgKey, Model model) {
         if (Constants.UPDATE_SUCCESS_KEY.equals(msgKey)) {
             // 更新メッセージ制御
-            model.addAttribute("message", Constants.MSG_UPDATE_SUCCESS);
+            model.addAttribute("message", messageUtil.getMessage(Constants.MSG_UPDATE_SUCCESS));
         } else if (Constants.INSERT_SUCCESS_KEY.equals(msgKey)) {
             // 登録メッセージ制御
-            model.addAttribute("message", Constants.MSG_INSERT_SUCCESS);
+            model.addAttribute("message", messageUtil.getMessage(Constants.MSG_INSERT_SUCCESS));
         }
 
         return "admin/admin_items";
@@ -68,7 +72,7 @@ public class AdminItemController {
         
         // 商品登録
         itemService.insert(form);
-        return "redirect:/admin/items?msgKey=" + Constants.INSERT_SUCCESS_KEY;
+        return "redirect:/admin/items?msgKey=" + messageUtil.getMessage(Constants.INSERT_SUCCESS_KEY);
     }
 
     /**

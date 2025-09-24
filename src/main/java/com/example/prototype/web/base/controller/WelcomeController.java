@@ -14,12 +14,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.prototype.biz.users.entity.ExtendedUser;
 import com.example.prototype.biz.users.service.UsersService;
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.common.constants.Constants;
 
 @Controller
 public class WelcomeController {
     @Autowired
     private UsersService userService;
+    
+    @Autowired
+    private MessageUtil messageUtil;
     
     /** パスワード有効期限切れ事前通知日の閾値 */
     @Value("${auth.login.password.expiry.warning.days}")
@@ -48,7 +52,7 @@ public class WelcomeController {
         // パスワード有効期限前の警告メッセージチェック
         long daysLeft = ChronoUnit.DAYS.between(LocalDateTime.now(), passwordExpiryAt);
         if (daysLeft <= passwordExpiryWarningDays) {
-            model.addAttribute("warning", String.format(Constants.MSG_PASSWORD_EXPIRY_TEMPLATE, daysLeft));
+            model.addAttribute("warning", String.format(messageUtil.getMessage(Constants.MSG_PASSWORD_EXPIRY_TEMPLATE), daysLeft));
         }
 
         return "base/top";
@@ -66,13 +70,13 @@ public class WelcomeController {
         
         switch(msgKey) {
         case Constants.GOOGLE_LINK_FAILURE_KEY:
-            model.addAttribute("googleLinkWarning", Constants.ERR_MSG_UPDATE_GOOGLE_FAILURE);
+            model.addAttribute("googleLinkWarning", messageUtil.getMessage(Constants.ERR_MSG_UPDATE_GOOGLE_FAILURE));
             break;
         case Constants.GOOGLE_LINK_SUCCESS_KEY:
-            model.addAttribute("message", Constants.MSG_UPDATE_GOOGLE_SUB_SUCCESS);
+            model.addAttribute("message", messageUtil.getMessage(Constants.MSG_UPDATE_GOOGLE_SUB_SUCCESS));
             break;
         case Constants.GOOGLE_LINK_CANSEL_KEY:
-            model.addAttribute("message", Constants.MSG_CANSEL_GOOGLE_SUB);
+            model.addAttribute("message", messageUtil.getMessage(Constants.MSG_CANSEL_GOOGLE_SUB));
             break;
         default:
             // 処理無し

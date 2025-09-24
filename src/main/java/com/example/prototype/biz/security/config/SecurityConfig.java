@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.FormHttpMessageConverter;
@@ -48,6 +49,7 @@ import com.example.prototype.biz.users.entity.ExtendedUser;
 import com.example.prototype.biz.users.listener.ExtendedAccessDeniedHandler;
 import com.example.prototype.biz.users.service.AuthenticationUserService;
 import com.example.prototype.biz.users.service.UsersService;
+import com.example.prototype.biz.utils.MessageUtil;
 import com.example.prototype.common.constants.Constants;
 
 /**
@@ -70,6 +72,9 @@ public class SecurityConfig {
 
     @Autowired
     private UsersService userService;
+    
+    @Autowired
+    private MessageUtil messageUtil;
 
     /** OAuth2連携成功後処理Bean */
     @Autowired
@@ -110,10 +115,12 @@ public class SecurityConfig {
     /** フォーム認証に使用する情報の定義用Bean */
     @Bean
     public AuthenticationManager authenticationManager(
+            MessageSource messageSource,
             UserDetailsService userDetailsService,
             PasswordEncoder passwordEncoder) {
         // 認証に使用するBeanを設定
         var provider = new DaoAuthenticationProvider();
+        provider.setMessageSource(messageSource);
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
 
@@ -247,7 +254,7 @@ public class SecurityConfig {
                 user = userService.findByGoogleSub(oidcUser.getSubject());
                 if (user == null) {
                     // Googleアカウント認証失敗
-                    throw new UsernameNotFoundException(Constants.ERR_MSG_GOOGLE_OAUTH_FAILURE);
+                    throw new UsernameNotFoundException(messageUtil.getMessage(Constants.ERR_MSG_GOOGLE_OAUTH_FAILURE));
                 }
             }
 
