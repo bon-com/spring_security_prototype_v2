@@ -170,10 +170,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // 認証不要のURL
                         .requestMatchers(
-                                new AntPathRequestMatcher("/login/**"),
+                                new AntPathRequestMatcher("/login"),
                                 new AntPathRequestMatcher("/oauth2/**"),
                                 new AntPathRequestMatcher("/session-invalid"),
-                                new AntPathRequestMatcher("/logout/**"))
+                                new AntPathRequestMatcher("/logout"))
                         .permitAll()
 
                         // ロールベースの認可設定
