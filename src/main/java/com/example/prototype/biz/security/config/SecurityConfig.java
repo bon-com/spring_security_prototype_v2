@@ -170,9 +170,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // 認証不要のURL
                         .requestMatchers(
-                                new AntPathRequestMatcher("/login"),
+                                new AntPathRequestMatcher("/login/**"),
                                 new AntPathRequestMatcher("/oauth2/**"),
-                                new AntPathRequestMatcher("/session-invalid"))
+                                new AntPathRequestMatcher("/session-invalid"),
+                                new AntPathRequestMatcher("/logout/**"))
                         .permitAll()
 
                         // ロールベースの認可設定
@@ -190,8 +191,7 @@ public class SecurityConfig {
                         .usernameParameter("loginId") // フォームの name="loginId" を認識
                         .passwordParameter("password") // フォームの name="password" を認識
                         .defaultSuccessUrl("/", true) // ログイン成功後の遷移先
-                        .failureUrl("/login?error") // ログイン失敗時の遷移先
-                        .permitAll())
+                        .failureUrl("/login?error")) // ログイン失敗時の遷移先
 
                 // OAuth 2.0の連携設定
                 .oauth2Login(oauth2 -> oauth2
@@ -208,8 +208,7 @@ public class SecurityConfig {
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .logoutSuccessUrl("/login?logout=true") // ログアウト成功時のURL
                         .invalidateHttpSession(true) // ログアウト時にサーバー側のセッション破棄
-                        .deleteCookies("JSESSIONID") // ログアウト時にクライアント側のクッキー削除
-                        .permitAll())
+                        .deleteCookies("JSESSIONID")) // ログアウト時にクライアント側のクッキー削除
 
                 // 認証/認可エラーハンドリング設定
                 .exceptionHandling(ex -> ex
