@@ -173,6 +173,7 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/login"),
                                 new AntPathRequestMatcher("/oauth2/**"),
                                 new AntPathRequestMatcher("/session-invalid"),
+                                new AntPathRequestMatcher("/session-expired"),
                                 new AntPathRequestMatcher("/logout"))
                         .permitAll()
 
@@ -218,8 +219,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .invalidSessionUrl("/session-invalid") // 無効なセッションでアクセスされた場合のリダイレクトパス
                         .maximumSessions(1) // 最大セッション数
-                        .maxSessionsPreventsLogin(true) // 最大セッション数を超えた場合にログインを拒否するかどうか（true: 新しいログインを拒否/ false: 古いセッションを破棄して新規ログインを許可）
-                        .sessionRegistry(sessionRegistry()));
+                          .maxSessionsPreventsLogin(false) // 最大セッション数を超えた場合にログインを拒否するかどうか（true: 新しいログインを拒否/ false: 古いセッションを破棄して新規ログインを許可）
+                          .expiredUrl("/session-expired") // セッション有効期限切れ（maxSessionsPreventsLoginにfalseを設定している場合に機能する）
+                          .sessionRegistry(sessionRegistry())); // セッションが有効になっている状態を管理
 
         return http.build();
     }

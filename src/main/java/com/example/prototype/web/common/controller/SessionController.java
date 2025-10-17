@@ -14,7 +14,7 @@ public class SessionController {
     private MessageUtil messageUtil;
     
     /**
-     * セッションタイムアウト、無効なセッションなど
+     * 無効なセッション（例：サーバー再起動後に古いセッションIDでアクセス）
      * @param model
      * @return
      */
@@ -24,4 +24,14 @@ public class SessionController {
         return "error";
     }
     
+    /**
+     * セッションが有効期限切れ（例：同一ユーザーの多重ログインで古いセッションが強制終了）
+     * @param model
+     * @return
+     */
+    @GetMapping(value = "/session-expired")
+    public String expired(Model model) {
+        model.addAttribute("message", messageUtil.getMessage(Constants.ERR_MSG_EXPIRED_SESSION));
+        return "error";
+    }   
 }

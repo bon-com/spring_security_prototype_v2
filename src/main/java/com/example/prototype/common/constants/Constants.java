@@ -14,8 +14,10 @@ public class Constants {
     public static final String ERR_MSG_LOGIN_ID_DUPLICATE = "error.message.login.id.duplicate";
     /** メールアドレス重複エラーメッセージ */
     public static final String ERR_MSG_EMAIL_DUPLICATE = "error.message.email.duplicate";
-    /** セッションタイムアウトエラーメッセージ */
+    /** 無効セッションエラーメッセージ */
     public static final String ERR_MSG_INVALID_SESSION = "error.message.invalid.session";
+    /** 有効期限切れセッションエラーメッセージ */
+    public static final String ERR_MSG_EXPIRED_SESSION = "error.message.expired.session";
     /** 利用者取得エラーメッセージ */
     public static final String ERR_MSG_NO_USER = "error.message.no.user";
     /** 認証エラーエラーメッセージ（Google OAuth2ログイン） */
